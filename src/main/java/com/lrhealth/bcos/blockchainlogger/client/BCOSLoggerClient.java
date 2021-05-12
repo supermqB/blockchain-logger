@@ -129,23 +129,4 @@ public class BCOSLoggerClient {
         }
         return 0;
     }
-
-    /*public static void main(String[] args) throws Exception {
-
-        BCOSLoggerClient client = new BCOSLoggerClient();
-        client.init();
-
-        LogAsset logAsset = new LogAsset("log2", "adfs.xxxxxx", "signature");
-
-        // client.insertTable();
-        // client.deployContract();
-        logger.info("add a log asset, result: {}, id: {}", client.addLog(logAsset), logAsset.getLogId());
-        logger.info("add a log asset, result: {}, id: {}", client.addLog(logAsset), logAsset.getLogId());
-        logger.info("query log asset with id: {}, its result is: {}", logAsset.getLogId(),
-                client.queryLog(logAsset.getLogId()).toString());
-        logger.info("%n assets are removed for logid: {}", client.removeLog(logAsset), logAsset.getLogId());
-        logger.info("%n assets are removed for logid: {}", client.removeLog(logAsset), logAsset.getLogId());
-
-        System.exit(0);
-    }*/
 }

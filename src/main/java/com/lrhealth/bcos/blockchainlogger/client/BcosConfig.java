@@ -5,12 +5,10 @@ import java.util.Map;
 
 import org.fisco.bcos.sdk.config.model.AmopTopic;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
-@ConfigurationProperties
-@PropertySource(value = "classpath:fisco-config.properties", ignoreResourceNotFound = true, encoding = "UTF-8")
+@Configuration
+@ConfigurationProperties(prefix ="bcos")
 public class BcosConfig {
     private Map<String, Object> cryptoMaterial;
     public Map<String, List<String> > network;
