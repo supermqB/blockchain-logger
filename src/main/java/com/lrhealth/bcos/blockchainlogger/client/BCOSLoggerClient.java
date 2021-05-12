@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 
 import com.lrhealth.bcos.blockchainlogger.contract.BCOSLogger;
 import com.lrhealth.bcos.blockchainlogger.contract.entity.LogAsset;
@@ -31,13 +32,15 @@ public class BCOSLoggerClient {
     private Client client;
     private CryptoKeyPair cryptoKeyPair;
 
-    //@PostConstruct
+    @PostConstruct
     public void init() throws Exception {
         logger.info("creating client for group 1......");
         client = fiscoBcos.getBcosSDK().getClient(1);
         cryptoKeyPair = client.getCryptoSuite().createKeyPair();
         client.getCryptoSuite().setCryptoKeyPair(cryptoKeyPair);
         logger.debug("create client for group1, account address is " + cryptoKeyPair.getAddress());
+
+        this.deployContract();
     } 
 
     public String deployContract() {
@@ -84,6 +87,7 @@ public class BCOSLoggerClient {
         return contractAddress;
     }
 
+    /*  block chain functions are as below.              */
     public int addLog(LogAsset assetLog) {
         int insertedCount = 0;
         try {
