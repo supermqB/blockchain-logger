@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>北方健康链客户端</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body style="width: 60%; margin: 50px auto;">
+    <p>请使用 /addlog 来将日志上链。</p>
+    <fieldset>
+        <legend>/addlog</legend>
+        <pre>
+    参数示例：
+    {
+        "userId": "bcosuser",
+        "keyURL": "/test/add",
+        "content": "rawcontent"
+    }
+        </pre>
+    </fieldset>
+
+    <p>请使用 /verifylog 来将检查日志是否被篡改。</p>
+    <fieldset>
+        <legend>/verifylog</legend>
+        <pre>
+    参数示例：
+    {
+        "logId": "40c1baa13514ed416044c2e9a1db666b",
+        "content":"rawcontent"
+    }
+        </pre>
+    </fieldset>
+</body>
+</html>

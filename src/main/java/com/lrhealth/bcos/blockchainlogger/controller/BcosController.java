@@ -7,6 +7,7 @@ import com.lrhealth.bcos.blockchainlogger.controller.tool.DataTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,20 +19,6 @@ public class BcosController {
 
     @Autowired
     BCOSLoggerClient client;
-
-    @RequestMapping("/")
-    public String index() {
-        LogAsset logAsset = new LogAsset("log3", "adfs.xxxxxx", "signature");
-
-        logger.info("add a log asset, result: {}, id: {}", client.addLog(logAsset), logAsset.getLogId());
-        logger.info("add a log asset, result: {}, id: {}", client.addLog(logAsset), logAsset.getLogId());
-        logger.info("query log asset with id: {}, its result is: {}", logAsset.getLogId(),
-                client.queryLog(logAsset.getLogId()).toString());
-        logger.info("{} assets are removed for logid: {}", client.removeLog(logAsset), logAsset.getLogId());
-        logger.info("{} assets are removed for logid: {}", client.removeLog(logAsset), logAsset.getLogId());
-
-        return "yes, I'm done!";
-    }
 
     @RequestMapping(value = { "/addlog" }, method = { RequestMethod.POST })
     public String addlog(@RequestBody LogRequestBean log) {
