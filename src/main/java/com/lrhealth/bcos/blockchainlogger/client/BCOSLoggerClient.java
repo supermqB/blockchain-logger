@@ -18,6 +18,7 @@ import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,9 @@ public class BCOSLoggerClient {
     private Client client;
     private CryptoKeyPair cryptoKeyPair;
 
+    @Value("${bcos.contract.logger.address}")
+    private String contractAddr;
+
     @PostConstruct
     public void init() throws Exception {
         logger.info("creating client for group 1......");
@@ -40,60 +44,28 @@ public class BCOSLoggerClient {
         client.getCryptoSuite().setCryptoKeyPair(cryptoKeyPair);
         logger.debug("create client for group1, account address is " + cryptoKeyPair.getAddress());
 
-        this.deployContract();
-    } 
+        if (contractAddr == null) {
+            deployContract();
+        }
+    }
 
-    public String deployContract() {
+    public void deployContract() {
         try {
             BCOSLogger loggerContract = BCOSLogger.deploy(client, cryptoKeyPair);
-            logger.info(" deploy loggerContract success, contract address is " + loggerContract.getContractAddress());
-
-            recordContractAddr(loggerContract.getContractAddress());
-            return loggerContract.getContractAddress();
+            logger.info("deploy loggerContract success, contract address is " + loggerContract.getContractAddress());
+            contractAddr = loggerContract.getContractAddress();
         } catch (Exception e) {
             logger.error(" deploy Asset contract failed, error message is  " + e.getMessage());
         }
-        return "";
     }
 
-    private static String CONTRACT_ADDR_KEY = "logger_contract_address";
-
-    private void recordContractAddr(String address) throws FileNotFoundException, IOException {
-        Properties prop = new Properties();
-        prop.setProperty(CONTRACT_ADDR_KEY, address);
-        final Resource contractResource = new ClassPathResource("contract.properties");
-        FileOutputStream fileOutputStream = new FileOutputStream(contractResource.getFile());
-        prop.store(fileOutputStream, "contract address");
-    }
-
-    private static String contractAddr = "";
-
-    public synchronized String getContractAddr() throws Exception {
-        if (!"".equals(contractAddr)) {
-            return contractAddr;
-        }
-        // load Asset contact address from contract.properties
-        Properties prop = new Properties();
-        final Resource contractResource = new ClassPathResource("contract.properties");
-        prop.load(contractResource.getInputStream());
-
-        String contractAddress = prop.getProperty(CONTRACT_ADDR_KEY);
-        if (contractAddress == null || contractAddress.trim().equals("")) {
-            contractAddress = deployContract();
-        }
-        logger.info(" load Asset address from contract.properties, address is {}", contractAddress);
-
-        contractAddr = contractAddress;
-        return contractAddress;
-    }
-
-    /*  block chain functions are as below.              */
-    public int addLog(LogAsset assetLog) {
+    /* block chain functions are as below. */
+    public int addLog(LogAsset logAsset) {
         int insertedCount = 0;
         try {
-            BCOSLogger loggerContract = BCOSLogger.load(getContractAddr(), client, cryptoKeyPair);
-            TransactionReceipt receipt = loggerContract.insert(assetLog.getLogId(), assetLog.getFootprint(),
-                    assetLog.getSignature());
+            BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
+            TransactionReceipt receipt = loggerContract.insert(logAsset.getLogId(), logAsset.getFootprint(),
+                    logAsset.getSignature());
             List<BCOSLogger.InsertResultEventResponse> response = loggerContract.getInsertResultEvents(receipt);
             if (!response.isEmpty()) {
                 insertedCount = response.get(0).count.intValue();
@@ -108,7 +80,7 @@ public class BCOSLoggerClient {
 
     public LogAsset queryLog(String logId) {
         try {
-            BCOSLogger loggerContract = BCOSLogger.load(getContractAddr(), client, cryptoKeyPair);
+            BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
             Tuple3<List<String>, List<String>, List<String>> queryResult = loggerContract.query(logId);
             return new LogAsset(queryResult.getValue1().get(0), queryResult.getValue2().get(0),
                     queryResult.getValue3().get(0));
@@ -119,9 +91,15 @@ public class BCOSLoggerClient {
         return new LogAsset();
     }
 
+    public int updateLog(LogAsset logAsset) {
+        int removedCnt = this.removeLog(logAsset);
+        this.addLog(logAsset);
+        return removedCnt;
+    }
+
     public int removeLog(LogAsset logAsset) {
         try {
-            BCOSLogger loggerContract = BCOSLogger.load(getContractAddr(), client, cryptoKeyPair);
+            BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
             TransactionReceipt receipt = loggerContract.remove(logAsset.getLogId(), logAsset.getFootprint());
             List<BCOSLogger.RemoveResultEventResponse> response = loggerContract.getRemoveResultEvents(receipt);
             if (!response.isEmpty()) {
