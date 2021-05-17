@@ -44,7 +44,7 @@ public class BCOSLoggerClient {
         client.getCryptoSuite().setCryptoKeyPair(cryptoKeyPair);
         logger.debug("create client for group1, account address is " + cryptoKeyPair.getAddress());
 
-        if (contractAddr == null) {
+        if (contractAddr == null || "".equals(contractAddr)) {
             deployContract();
         }
     }
