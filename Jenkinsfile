@@ -39,7 +39,10 @@ pipeline {
 
         stage('deploy') {
             steps {
-                sh """ssh -p 29022 root@192.167.148.60 "helm uninstall ${HELM_PROJECT_NAME} --namespace lr-app || echo ${HELM_PROJECT_NAME} helm instance does not exist"
+                sh """
+                      ssh -p 29022 root@192.167.148.60 "helm repo update"
+                      ssh -p 29022 root@192.167.148.60 "helm fetch lrhelm/${HELM_PROJECT_NAME}"
+                      ssh -p 29022 root@192.167.148.60 "helm uninstall ${HELM_PROJECT_NAME} --namespace lr-app || echo ${HELM_PROJECT_NAME} helm instance does not exist"
                       ssh -p 29022 root@192.167.148.60 "helm install ${HELM_PROJECT_NAME} --namespace lr-app --create-namespace --set 'image.tag=${IMAGE_TAG_NAME}' lrhelm/${HELM_PROJECT_NAME}" """
             }
         }
