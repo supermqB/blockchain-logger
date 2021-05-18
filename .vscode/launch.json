@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "launch with local env",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.lrhealth.bcos.blockchainlogger.BlockchainLoggerApplication",
+            "projectName": "blockchain-logger",
+            "args": "",
+            "env": {
+                "BCOS_PROFILE": "local"
+            }
+        },
+        {
+            "type": "java",
+            "name": "launch with default config",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.lrhealth.bcos.blockchainlogger.BlockchainLoggerApplication",
+            "projectName": "blockchain-logger",
+            "args": ""
+        }
+    ]
+}
