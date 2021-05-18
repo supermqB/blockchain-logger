@@ -15,13 +15,16 @@
         },
         {
             "type": "java",
-            "name": "launch with default config",
+            "name": "launch with default dev config",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "mainClass": "com.lrhealth.bcos.blockchainlogger.BlockchainLoggerApplication",
             "projectName": "blockchain-logger",
-            "args": ""
+            "args": "",
+            "env": {
+                "BCOS_PROFILE": "dev"
+            }
         }
     ]
 }
