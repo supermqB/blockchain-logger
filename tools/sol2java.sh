@@ -62,7 +62,7 @@ if [ $# == 0 ] || [ "${1}" == "-h" ] || [ "${1}" == "--help" ] || [ "${1}" == "h
     exit 0
 else
      check_java
-     java -cp "apps/*:lib/*:conf/" console.common.ConsoleUtils $@
+     java -cp "lib/*:conf/" console.common.ConsoleUtils $@
 fi
 
 
