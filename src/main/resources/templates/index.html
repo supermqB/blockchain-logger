@@ -1,33 +1,50 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head> 
-    <title>北方健康链客户端</title> 
+  <head>
+    <title>北方健康链客户端</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body style="width: 60%; margin: 50px auto;">
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  </head>
+  <body style="width: 60%; margin: 50px auto">
+    <div style="height: 10%">
+      <image style="width: 100%" src="images/north_health_header.png"></image>
+    </div>
     <p>请使用 /addlog 来将日志上链。</p>
     <fieldset>
-        <legend>/addlog</legend>
-        <pre>
+      <legend>/addlog</legend>
+      <pre>
     参数示例：
     {
         "userId": "bcosuser",
         "keyURL": "/test/add",
         "content": "rawcontent"
     }
-        </pre>
+      </pre>
     </fieldset>
 
     <p>请使用 /verifylog 来将检查日志是否被篡改。</p>
     <fieldset>
-        <legend>/verifylog</legend>
-        <pre>
+      <legend>/verifylog</legend>
+      <pre>
     参数示例：
     {
         "logId": "40c1baa13514ed416044c2e9a1db666b",
         "content":"rawcontent"
     }
-        </pre>
+      </pre>
     </fieldset>
-</body>
+
+    <br />
+    <ul>
+      <li>
+        接口测试界面，请访问
+        <a href="swagger-ui.html#/bcos-controller" target="swagger">这里</a>
+      </li>
+      <br />
+      <li>
+        区块链查看器，请访问
+        <a href="http://120.221.161.32:5100/" target="bcos_explorer">北方健康区块链explorer</a>
+      </li>
+    </ul>
+  </body>
 </html>

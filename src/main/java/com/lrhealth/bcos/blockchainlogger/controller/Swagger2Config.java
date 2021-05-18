@@ -17,7 +17,7 @@ public class Swagger2Config {
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2).useDefaultResponseMessages(false).apiInfo(apiInfo()).select()
-                .apis(RequestHandlerSelectors.any()).paths(PathSelectors.any()).build();
+                .apis(RequestHandlerSelectors.any()).paths(PathSelectors.regex("(?!/error.*).*")).build();
     }
 
     private ApiInfo apiInfo() {
