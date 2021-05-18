@@ -48,7 +48,7 @@ pipeline {
         }
     }
 
-    /* post {
+    post {
         success {
             script {
                 finish = new Date()
@@ -82,8 +82,8 @@ pipeline {
                         > 结束时间: <font color=\\"comment\\">${end_time}</font>
                         > 查看[控制台](${BUILD_URL}console)"
                 }
-            }""", url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=db63f754-1400-4bd6-a901-a31eca138140'}
+            }""", url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=db63f754-1400-4bd6-a901-a31eca138140'
         }
-    } */
+    }
 }
 
