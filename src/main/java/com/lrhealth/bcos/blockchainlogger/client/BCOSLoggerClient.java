@@ -24,19 +24,18 @@ public class BCOSLoggerClient {
 
     @Autowired
     private FiscoBcos fiscoBcos;
+
     private Client client;
     private CryptoKeyPair cryptoKeyPair;
-
     @Value("${bcos.contract.logger.address}")
     private String contractAddr;
 
     @PostConstruct
     public void init() throws Exception {
-        logger.info("creating client for group 1......");
         client = fiscoBcos.getBcosSDK().getClient(1);
-        cryptoKeyPair = client.getCryptoSuite().createKeyPair();
-        client.getCryptoSuite().setCryptoKeyPair(cryptoKeyPair);
-        logger.debug("create client for group1, account address is " + cryptoKeyPair.getAddress());
+        cryptoKeyPair = client.getCryptoSuite().getCryptoKeyPair();
+
+        logger.info("create client for group1, with account address: {}", cryptoKeyPair.getAddress());
 
         if (contractAddr == null || "".equals(contractAddr)) {
             deployContract();
@@ -49,7 +48,7 @@ public class BCOSLoggerClient {
             logger.info("deploy loggerContract success, contract address is " + loggerContract.getContractAddress());
             contractAddr = loggerContract.getContractAddress();
         } catch (Exception e) {
-            logger.error(" deploy Asset contract failed, error message is  " + e.getMessage());
+            logger.error("deploy Asset contract failed, error message is  " + e.getMessage());
         }
     }
 
@@ -64,7 +63,7 @@ public class BCOSLoggerClient {
             if (!response.isEmpty()) {
                 insertedCount = response.get(0).count.intValue();
             } else {
-                logger.error(" event log not found, maybe transaction not exec. ");
+                logger.error("insert event is not found, maybe transaction not exec, please check the contract is properly deployed, or an incorrect contract is used.");
             }
         } catch (Exception e) {
             logger.error("registerLog exception, error message is {}", e.getMessage());
