@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import com.lrhealth.bcos.blockchainlogger.contract.BCOSLogger;
 import com.lrhealth.bcos.blockchainlogger.contract.entity.LogAsset;
 
+import org.fisco.bcos.sdk.BcosSDK;
 import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple3;
 import org.fisco.bcos.sdk.client.Client;
 import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
@@ -23,16 +24,18 @@ public class BCOSLoggerClient {
     static Logger logger = LoggerFactory.getLogger(BCOSLoggerClient.class);
 
     @Autowired
-    private FiscoBcos fiscoBcos;
+    private BcosSDK bcosSDK;
 
     private Client client;
     private CryptoKeyPair cryptoKeyPair;
+
+    /* 使用链上已经部署合约，需配置。 */
     @Value("${bcos.contract.logger.address}")
     private String contractAddr;
 
     @PostConstruct
     public void init() throws Exception {
-        client = fiscoBcos.getBcosSDK().getClient(1);
+        client = bcosSDK.getClient(1);
         cryptoKeyPair = client.getCryptoSuite().getCryptoKeyPair();
 
         logger.info("create client for group1, with account address: {}", cryptoKeyPair.getAddress());
