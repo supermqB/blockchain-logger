@@ -2,57 +2,33 @@ package com.lrhealth.bcos.blockchainlogger.client;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import com.cnhealth.devcenter.fiscoclient.AbstractContractService;
 import com.lrhealth.bcos.blockchainlogger.contract.BCOSLogger;
 import com.lrhealth.bcos.blockchainlogger.contract.entity.LogAsset;
 
-import org.fisco.bcos.sdk.BcosSDK;
 import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple3;
-import org.fisco.bcos.sdk.client.Client;
-import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
+import org.fisco.bcos.sdk.transaction.model.exception.ContractException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BCOSLoggerClient {
+public class BCOSLoggerService extends AbstractContractService {
 
-    static Logger logger = LoggerFactory.getLogger(BCOSLoggerClient.class);
-
-    @Autowired
-    private BcosSDK bcosSDK;
-
-    private Client client;
-    private CryptoKeyPair cryptoKeyPair;
+    static Logger logger = LoggerFactory.getLogger(BCOSLoggerService.class);
 
     /* 使用链上已经部署合约，需配置。 */
     @Value("${bcos.contract.logger.address}")
     private String contractAddr;
 
-    @PostConstruct
-    public void init() throws Exception {
-        client = bcosSDK.getClient(1);
-        cryptoKeyPair = client.getCryptoSuite().getCryptoKeyPair();
+    public String getContractAddress() {
+        return this.contractAddr;
+    };
 
-        logger.info("create client for group1, with account address: {}", cryptoKeyPair.getAddress());
-
-        if (contractAddr == null || "".equals(contractAddr)) {
-            deployContract();
-        }
-    }
-
-    public void deployContract() {
-        try {
-            BCOSLogger loggerContract = BCOSLogger.deploy(client, cryptoKeyPair);
-            logger.info("deploy loggerContract success, contract address is " + loggerContract.getContractAddress());
-            contractAddr = loggerContract.getContractAddress();
-        } catch (Exception e) {
-            logger.error("deploy Asset contract failed, error message is  " + e.getMessage());
-        }
+    public void deployContract() throws ContractException {
+        contractAddr = BCOSLogger.deploy(client, cryptoKeyPair).getContractAddress();
     }
 
     /* block chain functions are as below. */
@@ -66,7 +42,8 @@ public class BCOSLoggerClient {
             if (!response.isEmpty()) {
                 insertedCount = response.get(0).count.intValue();
             } else {
-                logger.error("insert event is not found, maybe transaction not exec, please check the contract is properly deployed, or an incorrect contract is used.");
+                logger.error(
+                        "insert event is not found, maybe transaction not exec, please check the contract is properly deployed, or an incorrect contract is used.");
             }
         } catch (Exception e) {
             logger.error("registerLog exception, error message is {}", e.getMessage());

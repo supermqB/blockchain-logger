@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.cnhealth.devcenter</groupId>
             <artifactId>fisco-client-starter</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

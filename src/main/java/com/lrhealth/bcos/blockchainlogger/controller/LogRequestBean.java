@@ -50,7 +50,7 @@ public class LogRequestBean {
         return this.logid;
     }
 
-    public String getFootPrint() {
+    public String getFootprint() {
         return DataTool.signLogConent(this.getContent(), this.getSignature());
     }
 
