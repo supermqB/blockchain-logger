@@ -1,4 +1,4 @@
-FROM java:8
+FROM openjdk:8u201-jre-alpine3.9
 ARG JAR_FILE
 WORKDIR /springboot
 ADD ${JAR_FILE} app.jar

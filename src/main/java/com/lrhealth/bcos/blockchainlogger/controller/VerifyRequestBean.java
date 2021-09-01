@@ -1,5 +1,8 @@
 package com.lrhealth.bcos.blockchainlogger.controller;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class VerifyRequestBean {
     private String logId;
     private String content;

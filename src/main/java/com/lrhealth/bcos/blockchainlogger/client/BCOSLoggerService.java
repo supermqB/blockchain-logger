@@ -1,67 +1,34 @@
 package com.lrhealth.bcos.blockchainlogger.client;
 
-import java.util.List;
+import java.util.Map;
 
-import com.cnhealth.devcenter.fiscoclient.AbstractContractService;
-import com.lrhealth.bcos.blockchainlogger.contract.BCOSLogger;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.lrhealth.bcos.blockchainlogger.contract.entity.LogAsset;
+import com.lrhealth.bcos.blockchainlogger.controller.BcosController;
 
-import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple3;
-import org.fisco.bcos.sdk.model.TransactionReceipt;
-import org.fisco.bcos.sdk.transaction.model.exception.ContractException;
+import org.chainmaker.sdk.ResponseInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import cn.hongchain.smledger.sdk.ChainmakerClient;
+import cn.hutool.core.map.MapUtil;
+
 @Component
-public class BCOSLoggerService extends AbstractContractService {
+public class BCOSLoggerService {
 
     static Logger logger = LoggerFactory.getLogger(BCOSLoggerService.class);
 
-    /* 使用链上已经部署合约，需配置。 */
-    @Value("${bcos.contract.logger.address}")
-    private String contractAddr;
-
-    public String getContractAddress() {
-        return this.contractAddr;
-    };
-
-    public void deployContract() throws ContractException {
-        contractAddr = BCOSLogger.deploy(client, cryptoKeyPair).getContractAddress();
-    }
-
     /* block chain functions are as below. */
-    public int addLog(LogAsset logAsset) {
-        int insertedCount = 0;
-        try {
-            BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
-            TransactionReceipt receipt = loggerContract.insert(logAsset.getLogId(), logAsset.getFootprint(),
-                    logAsset.getSignature());
-            List<BCOSLogger.InsertResultEventResponse> response = loggerContract.getInsertResultEvents(receipt);
-            if (!response.isEmpty()) {
-                insertedCount = response.get(0).count.intValue();
-            } else {
-                logger.error(
-                        "insert event is not found, maybe transaction not exec, please check the contract is properly deployed, or an incorrect contract is used.");
-            }
-        } catch (Exception e) {
-            logger.error("registerLog exception, error message is {}", e.getMessage());
-        }
-        return insertedCount;
+    public String addLog(LogAsset logAsset) {
+        String result = invoke(logAsset);
+        logger.info("addLog ======================== result " + result);
+        return result;
     }
 
     public LogAsset queryLog(String logId) {
-        try {
-            BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
-            Tuple3<List<String>, List<String>, List<String>> queryResult = loggerContract.query(logId);
-            return new LogAsset(queryResult.getValue1().get(0), queryResult.getValue2().get(0),
-                    queryResult.getValue3().get(0));
-        } catch (Exception e) {
-            logger.error("registerLog exception, error message is {}", e.getMessage());
-            System.out.printf("register log failed, error message is %s\n", e.getMessage());
-        }
-        return new LogAsset();
+        return query(logId);
     }
 
     public int updateLog(LogAsset logAsset) {
@@ -72,16 +39,57 @@ public class BCOSLoggerService extends AbstractContractService {
 
     public int removeLog(LogAsset logAsset) {
         try {
-            BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
+           /* BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
             TransactionReceipt receipt = loggerContract.remove(logAsset.getLogId(), logAsset.getFootprint());
             List<BCOSLogger.RemoveResultEventResponse> response = loggerContract.getRemoveResultEvents(receipt);
             if (!response.isEmpty()) {
                 return response.get(0).count.intValue();
 
-            }
+            }*/
         } catch (Exception e) {
             logger.error("registerLog exception, error message is {}", e.getMessage());
         }
         return 0;
     }
+
+    public String invoke(LogAsset logAsset) {
+
+        Map<String, String> params = MapUtil.newHashMap();
+
+        JSONObject valueJson = new JSONObject();
+        valueJson.put("api_request_id", logAsset.getLogId());
+        valueJson.put("log_footprint", logAsset.getFootprint());
+        valueJson.put("signature", logAsset.getSignature());
+
+        params.put("key",logAsset.getLogId());
+        params.put("value",valueJson.toJSONString());
+
+        ResponseInfo responseInfo = ChainmakerClient.invokeContract(BcosController.CONTRACT_NAME, "save", params);
+
+        logger.info("invoke ============================ response:{}", responseInfo);
+        if (null == responseInfo) {
+            return null;
+        }
+        return JSON.toJSONString(responseInfo.getTxId());
+    }
+
+    public LogAsset query(String logId) {
+
+        Map<String, String> params = MapUtil.newHashMap();
+        params.put("key",logId);
+
+        ResponseInfo responseInfo = ChainmakerClient.queryContract(BcosController.CONTRACT_NAME, "find_by_key", params);
+        logger.info("query ============================ response:{}", responseInfo.getTxResponse().getContractResult().getResult().toStringUtf8());
+        if (null == responseInfo) {
+            return null;
+        }
+        JSONObject result = JSONObject.parseObject(String.valueOf(responseInfo.getTxResponse().getContractResult().getResult().toStringUtf8()));
+        JSONObject logAssetJson = result.getJSONObject("value");
+        LogAsset logAsset = new LogAsset();
+        logAsset.setLogId(logAssetJson.getString("api_request_id"));
+        logAsset.setFootprint(logAssetJson.getString("log_footprint"));
+        logAsset.setSignature(logAssetJson.getString("signature"));
+        return logAsset;
+    }
+
 }
