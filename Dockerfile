@@ -1,4 +1,4 @@
-FROM openjdk:8u201-jre-alpine3.9
+FROM docker.cnhealth.com/jdk8201:latest
 ARG JAR_FILE
 WORKDIR /springboot
 ADD ${JAR_FILE} app.jar
