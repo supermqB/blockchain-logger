@@ -1,4 +1,4 @@
-FROM docker.cnhealth.com/jdk8201:latest
+FROM java:8
 ARG JAR_FILE
 WORKDIR /springboot
 ADD ${JAR_FILE} app.jar
