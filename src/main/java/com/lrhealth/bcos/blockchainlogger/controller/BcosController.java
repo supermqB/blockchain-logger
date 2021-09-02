@@ -42,7 +42,7 @@ public class BcosController {
             // 1. create payload
             byte[] payload = ChainmakerClient.chainClient.createPayloadOfContractCreation(CONTRACT_NAME, "1.0.0", runtimeType, null, byteCode);
 
-            User adminUser1 = new User("wx-org4.chainmaker.org", FileUtils.getResourceFileBytes("crypto-config-test/wx-org4.chainmaker.org/user/admin1/admin1.sign.key"), FileUtils.getResourceFileBytes("crypto-config-test/wx-org4.chainmaker.org/user/admin1/admin1.sign.crt"));
+            User adminUser1 = new User("wx-org1.chainmaker.org", FileUtils.getResourceFileBytes("crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.sign.key"), FileUtils.getResourceFileBytes("crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.sign.crt"));
 
             // 2. create payloads with endorsement
             byte[] payloadWithEndorsement1 = adminUser1.signPayloadOfContractMgmt(payload, ChainmakerClient.chainClient.isEnabledCertHash());

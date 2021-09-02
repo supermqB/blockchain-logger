@@ -2,14 +2,14 @@ cloud:
   chainmaker:
     chains:
       - chain-id: chain1
-        org-id: wx-org4.chainmaker.org
-        user-key-path: crypto-config-test/wx-org4.chainmaker.org/user/client1/client1.sign.key
-        user-cert-path: crypto-config-test/wx-org4.chainmaker.org/user/client1/client1.sign.crt
+        org-id: wx-org1.chainmaker.org
+        user-key-path: crypto-config-test/wx-org1.chainmaker.org/user/client1/client1.sign.key
+        user-cert-path: crypto-config-test/wx-org1.chainmaker.org/user/client1/client1.sign.crt
     nodes:
       - grpc-url: grpcs://${CHAIN_MAKER_IP:36.137.245.136}:12301
-        client-key-path: crypto-config-test/wx-org4.chainmaker.org/user/admin1/admin1.tls.key
-        client-cert-path: crypto-config-test/wx-org4.chainmaker.org/user/admin1/admin1.tls.crt
-        tls-cert-path: crypto-config-test/wx-org4.chainmaker.org/ca/ca.crt
-        hostname: consensus1.tls.wx-org4.chainmaker.org
+        client-key-path: crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.tls.key
+        client-cert-path: crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.tls.crt
+        tls-cert-path: crypto-config-test/wx-org1.chainmaker.org/ca/ca.crt
+        hostname: consensus1.tls.wx-org1.chainmaker.org
         ssl-provider: openSSL
         negotiation-type: TLS
