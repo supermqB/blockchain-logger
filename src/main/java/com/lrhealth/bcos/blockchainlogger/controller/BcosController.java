@@ -1,22 +1,26 @@
 package com.lrhealth.bcos.blockchainlogger.controller;
 
-import cn.hongchain.smledger.sdk.ChainmakerClient;
 import com.lrhealth.bcos.blockchainlogger.client.BCOSLoggerService;
 import com.lrhealth.bcos.blockchainlogger.contract.entity.LogAsset;
 import com.lrhealth.bcos.blockchainlogger.controller.tool.DataTool;
 
-import lombok.extern.slf4j.Slf4j;
 import org.chainmaker.pb.common.ContractOuterClass;
 import org.chainmaker.sdk.ResponseInfo;
 import org.chainmaker.sdk.User;
-import org.chainmaker.sdk.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
+import cn.hongchain.smledger.sdk.ChainmakerClient;
+import cn.hutool.core.io.resource.ResourceUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @Api(description = "日志上链及查验接口")
 @Slf4j
@@ -37,12 +41,12 @@ public class BcosController {
         try {
             ContractOuterClass.RuntimeType runtimeType = ContractOuterClass.RuntimeType.forNumber(4);
 
-            byte[] byteCode = FileUtils.getResourceFileBytes("main.wasm");
+            byte[] byteCode = ResourceUtil.readBytes("main.wasm");
 
             // 1. create payload
             byte[] payload = ChainmakerClient.chainClient.createPayloadOfContractCreation(CONTRACT_NAME, "1.0.0", runtimeType, null, byteCode);
 
-            User adminUser1 = new User("wx-org1.chainmaker.org", FileUtils.getResourceFileBytes("crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.sign.key"), FileUtils.getResourceFileBytes("crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.sign.crt"));
+            User adminUser1 = new User("wx-org1.chainmaker.org", ResourceUtil.readBytes("crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.sign.key"), ResourceUtil.readBytes("crypto-config-test/wx-org1.chainmaker.org/user/admin1/admin1.sign.crt"));
 
             // 2. create payloads with endorsement
             byte[] payloadWithEndorsement1 = adminUser1.signPayloadOfContractMgmt(payload, ChainmakerClient.chainClient.isEnabledCertHash());

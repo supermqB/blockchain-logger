@@ -39,13 +39,16 @@ public class BCOSLoggerService {
 
     public int removeLog(LogAsset logAsset) {
         try {
-           /* BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client, cryptoKeyPair);
-            TransactionReceipt receipt = loggerContract.remove(logAsset.getLogId(), logAsset.getFootprint());
-            List<BCOSLogger.RemoveResultEventResponse> response = loggerContract.getRemoveResultEvents(receipt);
-            if (!response.isEmpty()) {
-                return response.get(0).count.intValue();
-
-            }*/
+            /*
+             * BCOSLogger loggerContract = BCOSLogger.load(contractAddr, client,
+             * cryptoKeyPair); TransactionReceipt receipt =
+             * loggerContract.remove(logAsset.getLogId(), logAsset.getFootprint());
+             * List<BCOSLogger.RemoveResultEventResponse> response =
+             * loggerContract.getRemoveResultEvents(receipt); if (!response.isEmpty()) {
+             * return response.get(0).count.intValue();
+             * 
+             * }
+             */
         } catch (Exception e) {
             logger.error("registerLog exception, error message is {}", e.getMessage());
         }
@@ -61,8 +64,8 @@ public class BCOSLoggerService {
         valueJson.put("log_footprint", logAsset.getFootprint());
         valueJson.put("signature", logAsset.getSignature());
 
-        params.put("key",logAsset.getLogId());
-        params.put("value",valueJson.toJSONString());
+        params.put("key", logAsset.getLogId());
+        params.put("value", valueJson.toJSONString());
 
         ResponseInfo responseInfo = ChainmakerClient.invokeContract(BcosController.CONTRACT_NAME, "save", params);
 
@@ -76,19 +79,20 @@ public class BCOSLoggerService {
     public LogAsset query(String logId) {
 
         Map<String, String> params = MapUtil.newHashMap();
-        params.put("key",logId);
+        params.put("key", logId);
 
         ResponseInfo responseInfo = ChainmakerClient.queryContract(BcosController.CONTRACT_NAME, "find_by_key", params);
-        logger.info("query ============================ response:{}", responseInfo.getTxResponse().getContractResult().getResult().toStringUtf8());
-        if (null == responseInfo) {
-            return null;
-        }
-        JSONObject result = JSONObject.parseObject(String.valueOf(responseInfo.getTxResponse().getContractResult().getResult().toStringUtf8()));
+        JSONObject result = JSONObject.parseObject(
+                String.valueOf(responseInfo.getTxResponse().getContractResult().getResult().toStringUtf8()));
         JSONObject logAssetJson = result.getJSONObject("value");
+
+        logger.info("query ============================ result:{}", logAssetJson);
         LogAsset logAsset = new LogAsset();
-        logAsset.setLogId(logAssetJson.getString("api_request_id"));
-        logAsset.setFootprint(logAssetJson.getString("log_footprint"));
-        logAsset.setSignature(logAssetJson.getString("signature"));
+        if (logAssetJson != null) {
+            logAsset.setLogId(logAssetJson.getString("api_request_id"));
+            logAsset.setFootprint(logAssetJson.getString("log_footprint"));
+            logAsset.setSignature(logAssetJson.getString("signature"));
+        }
         return logAsset;
     }
 
