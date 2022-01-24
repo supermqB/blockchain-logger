@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -36,6 +37,32 @@ public class BcosController {
             return logAsset.getLogId();
         } else {
             return "";
+        }
+    }
+
+    @ApiOperation(value = "数据汇聚日志", notes = "数据汇聚日志")
+    @RequestMapping(value = { "/saveDataCollectLog" }, method = { RequestMethod.POST })
+    public Boolean saveDataCollectLog(@RequestBody LogAsset logAsset) {
+
+        int insertedCount = client.addLog(logAsset);
+
+        logger.info("Save the log onto bockchain, id: {}, foortprint: {}, signature: {}", logAsset.getLogId(),
+                logAsset.getFootprint(), logAsset.getSignature());
+        return insertedCount > 0;
+    }
+
+    @ApiOperation(value = "数据汇聚日志查验", notes = "数据汇聚日志查验")
+    @RequestMapping(value = { "/verifyDataCollectLog" }, method = { RequestMethod.POST })
+    public String verifyDataCollectLog(@RequestParam String logId, @RequestParam String signature) {
+
+        LogAsset logAsset = client.queryLog(logId);
+
+        logger.info("query log from bockchain, id: {}, foortprint: {}, signature: {}", logAsset.getLogId(),
+                logAsset.getFootprint(), logAsset.getSignature());
+        if (signature.equals(logAsset.getSignature())) {
+            return logAsset.getFootprint();
+        } else {
+            return "{\"message\": \"no record is found with current logId and signature.\"}";
         }
     }
 
